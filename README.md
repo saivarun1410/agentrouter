@@ -7,7 +7,7 @@ npx agentfit scan     # analyse, propose, explain. writes nothing.
 npx agentfit init     # pick from the proposals and write them
 ```
 
-No API key. No model call. Offline, deterministic, and testable against fixtures.
+No API key. No model call. Offline, deterministic, and testable against fixtures. An optional `--llm` pass can widen the candidate field without loosening the bar — see below.
 
 ## Why this exists
 
@@ -127,7 +127,7 @@ Everything else stays offline: `--llm` is the *only* command that makes a networ
 ## Honest limits
 
 - **Emitter reach.** Neutrality is real at the *spec* level, but "agent" as a file format barely exists outside Claude Code today. `claude-code` is the rich emitter; `agents-md` writes a document of record. More will be added when the targets are worth writing for.
-- **The catalog is finite** — nine archetypes — but `--llm` lifts the ceiling (below). Without it, a genuinely novel agent for an unusual repo will not be invented.
+- **The catalog is finite** — nine archetypes. Without `--llm`, a genuinely novel agent for an unusual repo will not be invented; with it, the model can propose one but still has to clear the same gate.
 - **CI parsing is targeted, not a full YAML parse.** The conventional two-space GitHub Actions layout is recognised; exotic formatting is skipped rather than guessed at.
 - **No usage telemetry.** Retirement is driven by disappearing *evidence*, not by whether you actually invoked the agent.
 
