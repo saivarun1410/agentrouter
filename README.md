@@ -89,6 +89,26 @@ Because each spec records the evidence that justified it, `refresh` can tell the
 
 `render` is idempotent and safe in CI: commit `.agentfit/roster.json`, gitignore the rendered files, regenerate on checkout.
 
+## Optional: letting a model widen the field
+
+The catalog can only judge candidates it already knows. `--llm` adds a pass where a model proposes archetypes the catalog would miss — **without loosening the bar**:
+
+```bash
+npm install @anthropic-ai/sdk        # optional peer; the default path never needs it
+npx agentfit scan --llm
+```
+
+The safety property is the point. The model is sent **only the evidence records** — never your source — and every claim it makes must cite evidence refs verbatim. Those citations are then resolved against the real records, and the proposals go through the *same* mechanism gate as the catalog:
+
+- Cite a ref that doesn't exist → that claim is supported by nothing and cannot admit the agent.
+- Fabricate every citation → the proposal is discarded before the gate sees it.
+- Claim a mechanism that isn't one of the five → rejected.
+- Collide with a catalog id, or ask for no tools → discarded.
+
+So the model widens the field of candidates; it never widens the bar. Six tests pin this, including the mixed case where one real claim and one fabricated claim appear on the same proposal — only the evidenced mechanism is credited.
+
+Everything else stays offline: `--llm` is the *only* command that makes a network call, and the SDK is an optional peer dependency, so a plain `npx agentfit` still installs nothing.
+
 ## Options
 
 | Flag | Effect |
@@ -101,11 +121,13 @@ Because each spec records the evidence that justified it, `refresh` can tell the
 | `-y, --yes` | `init`: accept all proposals, no prompts |
 | `--check` | `render`: report drift, exit non-zero, write nothing |
 | `--apply` / `--prune` | `refresh`: write the reconciliation / remove retired agents |
+| `--llm` | `scan`: let a model propose extra archetypes, still subject to the gate |
+| `--llm-model` / `--llm-effort` | `scan`: override the model (default `claude-opus-5`) or effort (default `high`) |
 
 ## Honest limits
 
 - **Emitter reach.** Neutrality is real at the *spec* level, but "agent" as a file format barely exists outside Claude Code today. `claude-code` is the rich emitter; `agents-md` writes a document of record. More will be added when the targets are worth writing for.
-- **The catalog is finite.** Nine archetypes. A genuinely novel agent for an unusual repo will not be invented — the gate can only judge candidates it knows. An optional `--llm` pass that proposes additions (still subject to the same mechanism gate) is the planned extension.
+- **The catalog is finite** — nine archetypes — but `--llm` lifts the ceiling (below). Without it, a genuinely novel agent for an unusual repo will not be invented.
 - **CI parsing is targeted, not a full YAML parse.** The conventional two-space GitHub Actions layout is recognised; exotic formatting is skipped rather than guessed at.
 - **No usage telemetry.** Retirement is driven by disappearing *evidence*, not by whether you actually invoked the agent.
 
@@ -114,7 +136,7 @@ Because each spec records the evidence that justified it, `refresh` can tell the
 ```bash
 npm install
 npm run build
-npm test        # 24 tests over real on-disk git fixtures
+npm test        # 30 tests over real on-disk git fixtures
 ```
 
 Fixtures are real directories with real git history, because the probes read both and mocking either would stop testing the part most likely to break.

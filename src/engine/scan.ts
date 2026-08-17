@@ -26,6 +26,8 @@ export interface ScanOptions {
   root: string;
   budget?: number;
   archetypes?: Archetype[];
+  /** Reuse already-collected evidence instead of re-running every probe. */
+  evidence?: Evidence[];
 }
 
 export interface ScanResult {
@@ -43,7 +45,7 @@ export function scan(options: ScanOptions): ScanResult {
   const root = resolve(options.root);
   const budget = options.budget ?? DEFAULT_BUDGET;
   const ctx = createContext(root);
-  const evidence = collectEvidence(root);
+  const evidence = options.evidence ?? collectEvidence(root);
   const { admitted, rejected } = gate(options.archetypes ?? CATALOG, evidence);
 
   const ranked = [...admitted].sort((a, b) => b.score - a.score || a.archetype.id.localeCompare(b.archetype.id));

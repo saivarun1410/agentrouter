@@ -7,15 +7,42 @@ export interface ScanArgs {
   budget?: number;
   showEvidence?: boolean;
   json?: boolean;
+  /** Ask a model to propose additional archetypes, still subject to the gate. */
+  llm?: boolean;
+  llmModel?: string;
+  llmEffort?: string;
 }
 
-export function runScan(args: ScanArgs): ScanResult {
-  const result = scan({ root: args.root, budget: args.budget });
+export async function runScan(args: ScanArgs): Promise<ScanResult> {
+  const result = args.llm ? await scanProposed(args) : scan({ root: args.root, budget: args.budget });
   if (args.json) {
     process.stdout.write(`${JSON.stringify(result, replacer, 2)}\n`);
     return result;
   }
   printReport(result, args.showEvidence ?? false);
+  return result;
+}
+
+async function scanProposed(args: ScanArgs): Promise<ScanResult> {
+  const { scanWithProposals } = await import('../llm/index.js');
+  const result = await scanWithProposals({
+    root: args.root,
+    budget: args.budget,
+    llm: { model: args.llmModel, effort: args.llmEffort },
+  });
+
+  if (!args.json) {
+    const out = (line = '') => process.stdout.write(`${line}\n`);
+    out(heading('Model-proposed archetypes'));
+    out(
+      result.proposedIds.length > 0
+        ? dim(`  admitted after the same gate: ${result.proposedIds.join(', ')}`)
+        : dim('  the model proposed nothing that survived the gate.'),
+    );
+    for (const { id, reason } of result.discarded) {
+      out(`  ${red('✕')} ${id} ${dim('— discarded before the gate:')} ${dim(reason)}`);
+    }
+  }
   return result;
 }
 

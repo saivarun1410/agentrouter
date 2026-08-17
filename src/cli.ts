@@ -31,6 +31,9 @@ ${bold('Options')}
       --emitters <list>   Comma-separated: claude-code, agents-md (default: both)
       --evidence          scan: show every supporting record, not just the first two
       --json              scan: machine-readable output
+      --llm               scan: also let a model propose archetypes (same gate applies)
+      --llm-model <id>    scan: model for --llm (default: claude-opus-5)
+      --llm-effort <lvl>  scan: low | medium | high | xhigh | max (default: high)
   -y, --yes               init: accept all proposals and write without prompting
       --check             render: report drift and exit non-zero instead of writing
       --apply             refresh: write the reconciled roster
@@ -66,11 +69,14 @@ async function main(argv: string[]): Promise<number> {
 
   switch (args.command) {
     case 'scan':
-      runScan({
+      await runScan({
         root,
         budget,
         showEvidence: args.flags.has('evidence'),
         json: args.flags.has('json'),
+        llm: args.flags.has('llm'),
+        llmModel: first(args, ['llm-model']),
+        llmEffort: first(args, ['llm-effort']),
       });
       return 0;
 
