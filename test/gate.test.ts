@@ -71,3 +71,62 @@ test('ranking is deterministic across runs', () => {
   const second = scan({ root }).admitted.map((a) => a.archetype.id);
   assert.deepEqual(first, second);
 });
+
+test('a CI build matrix alone does not justify a fan-out agent', () => {
+  // A node-version matrix is the same work on several runtimes, not N
+  // independent targets. A single-package repo must never get package-fanout.
+  const root = makeRepo({
+    'package.json': '{"name":"solo","scripts":{"test":"vitest run"}}\n',
+    '.github/workflows/ci.yml': [
+      'name: CI', 'on: [push]', 'jobs:', '  test:', '    runs-on: ubuntu-latest',
+      '    strategy:', '      matrix:', '        node: [20, 22]',
+      '    steps:', '      - run: npm test', '',
+    ].join('\n'),
+  });
+  const result = scan({ root });
+
+  assert.ok(
+    result.evidence.some((e) => e.kind === 'matrix-job'),
+    'the matrix should still be observed as evidence',
+  );
+  assert.ok(
+    !result.admitted.some((a) => a.archetype.id === 'package-fanout'),
+    'but it must not on its own admit a fan-out agent',
+  );
+});
+
+test('one CI job counted under two kinds does not satisfy a two-job threshold', () => {
+  const root = makeRepo({
+    'package.json': '{"name":"solo","scripts":{"test":"vitest run"}}\n',
+    '.github/workflows/ci.yml': [
+      'name: CI', 'on: [push]', 'jobs:', '  only:', '    runs-on: ubuntu-latest',
+      '    steps:', '      - run: npm test', '',
+    ].join('\n'),
+  });
+  const result = scan({ root });
+
+  const jobRecords = result.evidence.filter(
+    (e) => e.kind === 'ci-job' || e.kind === 'long-running-job',
+  );
+  assert.ok(jobRecords.length >= 2, 'the single job does produce two evidence records');
+  assert.ok(
+    !result.admitted.some((a) => a.archetype.id === 'ci-failure-analyst'),
+    'yet one job must not satisfy the two-distinct-job threshold',
+  );
+});
+
+test('workspace packages do justify fan-out, with the matrix reinforcing it', () => {
+  const root = makeRepo(RICH_REPO);
+  const fanout = scan({ root }).admitted.find((a) => a.archetype.id === 'package-fanout');
+  assert.ok(fanout, 'three packages plus a workspaces field justify fan-out');
+
+  const parallelism = fanout.support.find((s) => s.mechanism === 'parallelism')!;
+  assert.ok(
+    parallelism.evidence.some((e) => e.kind === 'workspace-packages'),
+    'the required signal must be present',
+  );
+  assert.ok(
+    parallelism.evidence.some((e) => e.kind === 'matrix-job'),
+    'and the reinforcing signal is included once the requirement is met',
+  );
+});

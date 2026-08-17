@@ -114,10 +114,18 @@ Because each spec records the evidence that justified it, `refresh` can tell the
 ```bash
 npm install
 npm run build
-npm test        # 21 tests over real on-disk git fixtures
+npm test        # 24 tests over real on-disk git fixtures
 ```
 
 Fixtures are real directories with real git history, because the probes read both and mocking either would stop testing the part most likely to break.
+
+### It runs on itself
+
+CI does more than run the tests: it runs agentfit against this repository and fails if the committed agents no longer match their roster (`render --check`), or if the repository has drifted far enough to justify a different roster (`refresh`).
+
+Dogfooding earned its keep immediately. The first self-scan proposed `package-fanout` for this single-package repo, justified by a Node **version** matrix in CI — the same work across two runtimes, which is not N independent fan-out targets. Fixing it surfaced a second bug (one CI job counted under two evidence kinds satisfied a two-job threshold) and a design rule now enforced across the catalog:
+
+> The gate admits on **any** satisfied claim, so an archetype's loosest claim is its real admission bar. Every claim must independently justify the agent's existence.
 
 ## Licence
 

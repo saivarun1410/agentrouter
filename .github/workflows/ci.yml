@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The git-history probe reads commit subjects and changed paths, so a
+          # shallow clone would silently starve it and change the roster.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  self-check:
+    name: Roster is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      # agentfit runs against its own repository. `render --check` fails if the
+      # committed agent files no longer match the roster they came from.
+      - name: Rendered agents match the roster
+        run: node dist/cli.js render --check
+
+      # A dry-run refresh must be a no-op. If the repository has changed enough
+      # to justify a different roster, that is a decision for a human to make
+      # deliberately — not something to discover after it has already drifted.
+      - name: Roster still matches the repository
+        run: |
+          output="$(node dist/cli.js refresh)"
+          echo "$output"
+          if ! grep -q "still matches the repository" <<<"$output"; then
+            echo "::error::The roster no longer matches this repository."
+            echo "::error::Review the diff above, then run: npx agentfit refresh --apply"
+            exit 1
+          fi

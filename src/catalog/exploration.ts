@@ -1,5 +1,5 @@
 import type { Archetype } from '../types.js';
-import { claim, valuesOf } from './claims.js';
+import { claim, claimRequiring, valuesOf } from './claims.js';
 import { buildBody } from './body.js';
 
 export const codebaseExplorer: Archetype = {
@@ -59,9 +59,10 @@ export const packageFanout: Archetype = {
   invokeWhen:
     'Use when the same mechanical change must land across many packages or modules — a config bump, a lint fix, an API rename. One invocation handles one package.',
   claims: [
-    claim(
+    claimRequiring(
       'parallelism',
-      ['workspace-packages', 'matrix-job'],
+      ['workspace-packages'],
+      ['matrix-job'],
       'the repository is split into independent packages, so the same change can be applied to many of them at once instead of in sequence',
     ),
     claim(

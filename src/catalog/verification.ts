@@ -63,12 +63,17 @@ export const ciFailureAnalyst: Archetype = {
       'context-isolation',
       ['ci-job', 'long-running-job'],
       'CI logs run to thousands of lines across several jobs, and almost none of it survives into the answer',
-      { min: 2 },
+      { min: 2, distinctBy: 'job' },
     ),
+    // Same threshold as the claim above, deliberately. The gate admits on ANY
+    // satisfied claim, so an archetype's loosest claim is its real admission
+    // bar — a strict mechanism paired with a lax one is only as strict as the
+    // lax one. Every claim must independently justify the agent's existence.
     claim(
       'tool-scoping',
       ['ci-job'],
       'reading a run needs shell and network access to the CI provider, but no write access to the working tree',
+      { min: 2, distinctBy: 'job' },
     ),
   ],
   tools: ['Bash', 'Read', 'Grep'],
