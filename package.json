@@ -1,0 +1,39 @@
+{
+  "name": "agentfit",
+  "version": "0.1.0",
+  "description": "Derive a repo's subagent roster from evidence, and reject the candidates that should be skills or rules.",
+  "type": "module",
+  "bin": {
+    "agentfit": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
+    "test": "tsc -p tsconfig.test.json && node --test \"dist-test/test/*.test.js\"",
+    "dev": "tsc -p tsconfig.json --watch"
+  },
+  "keywords": [
+    "agents",
+    "subagents",
+    "claude-code",
+    "codegen",
+    "repo-analysis"
+  ],
+  "license": "MIT",
+  "author": "saivarun1410",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}
