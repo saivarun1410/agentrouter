@@ -20,8 +20,8 @@ export async function runInit(args: InitArgs): Promise<number> {
   if (existing) {
     process.stdout.write(
       `${yellow('!')} ${ROSTER_PATH} already exists (${existing.agents.length} agents).\n` +
-        `  Use ${bold('agentfit refresh')} to reconcile it with the current repository,\n` +
-        `  or ${bold('agentfit render')} to rewrite the agent files from it.\n`,
+        `  Use ${bold('agentrouter refresh')} to reconcile it with the current repository,\n` +
+        `  or ${bold('agentrouter render')} to rewrite the agent files from it.\n`,
     );
     return 1;
   }
@@ -64,7 +64,7 @@ export async function runInit(args: InitArgs): Promise<number> {
 
   process.stdout.write(
     `\n${green('✓')} wrote ${applied.length + 1} files.\n` +
-      `${dim(`  Edit ${ROSTER_PATH} or run \`agentfit tune <id> --constraint "..."\`, then \`agentfit render\`.`)}\n`,
+      `${dim(`  Edit ${ROSTER_PATH} or run \`agentrouter tune <id> --constraint "..."\`, then \`agentrouter render\`.`)}\n`,
   );
   return 0;
 }

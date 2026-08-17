@@ -30,7 +30,7 @@ interface Diff {
 export function runRefresh(args: RefreshArgs): number {
   const roster = readRoster(args.root);
   if (!roster) {
-    process.stderr.write(`${red('✕')} no ${ROSTER_PATH} found. Run \`agentfit init\` first.\n`);
+    process.stderr.write(`${red('✕')} no ${ROSTER_PATH} found. Run \`agentrouter init\` first.\n`);
     return 1;
   }
 

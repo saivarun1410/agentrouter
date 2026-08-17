@@ -55,7 +55,7 @@ function replacer(key: string, value: unknown): unknown {
 export function printReport(result: ScanResult, showEvidence: boolean): void {
   const out = (line = '') => process.stdout.write(`${line}\n`);
 
-  out(heading(`agentfit — ${result.repoName}`));
+  out(heading(`agentrouter — ${result.repoName}`));
   out(dim(`${result.root}${result.head ? ` @ ${result.head}` : ''}`));
   out(dim(`${result.evidence.length} evidence records from ${countProbes(result)} probes`));
 
@@ -99,7 +99,7 @@ export function printReport(result: ScanResult, showEvidence: boolean): void {
   }
 
   out();
-  out(dim('Next: `agentfit init` to choose from the proposed agents and write them.'));
+  out(dim('Next: `agentrouter init` to choose from the proposed agents and write them.'));
   out();
 }
 

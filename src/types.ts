@@ -1,5 +1,5 @@
 /**
- * Core vocabulary for agentfit.
+ * Core vocabulary for agentrouter.
  *
  * The central claim of this tool: a subagent only earns its existence when it
  * changes the outcome through one of five mechanisms. Anything that satisfies

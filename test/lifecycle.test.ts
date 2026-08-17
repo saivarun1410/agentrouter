@@ -132,7 +132,7 @@ test('render preserves nothing it did not write when the file is new', () => {
   assert.ok(!output.includes('Standing corrections'), 'no empty corrections section');
 });
 
-test('agentfit does not read its own output back as repository evidence', () => {
+test('agentrouter does not read its own output back as repository evidence', () => {
   const root = makeRepo(RICH_REPO);
 
   const before = scan({ root }).admitted.map((a) => a.archetype.id);
@@ -168,7 +168,7 @@ test('--version reports the version rather than falling through to help', async 
   const cli = join(process.cwd(), 'dist', 'cli.js');
   for (const flag of ['--version', '-v']) {
     const out = execFileSync('node', [cli, flag], { encoding: 'utf8' });
-    assert.match(out, /^agentfit@\d+\.\d+\.\d+/, `${flag} must print the version`);
+    assert.match(out, /^agentrouter@\d+\.\d+\.\d+/, `${flag} must print the version`);
     assert.ok(!out.includes('Usage'), `${flag} must not print the help text`);
   }
   // A bare invocation still shows help.

@@ -13,15 +13,15 @@ interface ParsedArgs {
   flags: Map<string, string[]>;
 }
 
-const HELP = `${bold('agentfit')} — derive a repository's subagent roster from evidence.
+const HELP = `${bold('agentrouter')} — derive a repository's subagent roster from evidence.
 
 ${bold('Usage')}
-  agentfit <command> [options]
+  agentrouter <command> [options]
 
 ${bold('Commands')}
   scan        Analyse the repository and report the proposed roster. Writes nothing.
   init        Choose from the proposed agents and write them.
-  render      Regenerate agent files from .agentfit/roster.json. Idempotent.
+  render      Regenerate agent files from .agentrouter/roster.json. Idempotent.
   tune        Record a standing correction against an agent, then re-render.
   refresh     Re-scan and reconcile the roster with the repository as it is now.
 
@@ -45,16 +45,16 @@ ${bold('Options')}
   -v, --version           Show version
 
 ${bold('Examples')}
-  agentfit scan --evidence
-  agentfit init
-  agentfit tune test-triage --constraint "never re-run the full suite to check one class"
-  agentfit refresh --apply --prune
+  agentrouter scan --evidence
+  agentrouter init
+  agentrouter tune test-triage --constraint "never re-run the full suite to check one class"
+  agentrouter refresh --apply --prune
 `;
 
 async function main(argv: string[]): Promise<number> {
   const args = parse(argv);
 
-  // Version is checked first: `agentfit --version` parses to no command, which
+  // Version is checked first: `agentrouter --version` parses to no command, which
   // would otherwise fall into the empty-command branch and print help instead.
   if (args.flags.has('version') || args.flags.has('v')) {
     process.stdout.write(`${GENERATOR}\n`);
@@ -96,7 +96,7 @@ async function main(argv: string[]): Promise<number> {
     case 'tune': {
       const id = args.positional[0];
       if (!id) {
-        process.stderr.write(`${red('✕')} tune needs an agent id. Try \`agentfit tune --help\`.\n`);
+        process.stderr.write(`${red('✕')} tune needs an agent id. Try \`agentrouter tune --help\`.\n`);
         return 1;
       }
       return runTune({
@@ -119,7 +119,7 @@ async function main(argv: string[]): Promise<number> {
       });
 
     default:
-      process.stderr.write(`${red('✕')} unknown command "${args.command}".\n${dim('Run `agentfit --help`.')}\n`);
+      process.stderr.write(`${red('✕')} unknown command "${args.command}".\n${dim('Run `agentrouter --help`.')}\n`);
       return 1;
   }
 }

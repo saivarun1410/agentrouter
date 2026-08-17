@@ -40,7 +40,7 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # agentfit runs against its own repository. `render --check` fails if the
+      # agentrouter runs against its own repository. `render --check` fails if the
       # committed agent files no longer match the roster they came from.
       - name: Rendered agents match the roster
         run: node dist/cli.js render --check
@@ -54,6 +54,6 @@ jobs:
           echo "$output"
           if ! grep -q "still matches the repository" <<<"$output"; then
             echo "::error::The roster no longer matches this repository."
-            echo "::error::Review the diff above, then run: npx agentfit refresh --apply"
+            echo "::error::Review the diff above, then run: npx agentrouter refresh --apply"
             exit 1
           fi

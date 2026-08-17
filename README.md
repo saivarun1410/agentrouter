@@ -1,10 +1,10 @@
-# agentfit
+# agentrouter
 
 Derive a repository's subagent roster from evidence — and say out loud which candidates should be skills or rules instead.
 
 ```bash
-npx agentfit scan     # analyse, propose, explain. writes nothing.
-npx agentfit init     # pick from the proposals and write them
+npx agentrouter scan     # analyse, propose, explain. writes nothing.
+npx agentrouter init     # pick from the proposals and write them
 ```
 
 No API key. No model call. Offline, deterministic, and testable against fixtures. An optional `--llm` pass can widen the candidate field without loosening the bar — see below.
@@ -13,7 +13,7 @@ No API key. No model call. Offline, deterministic, and testable against fixtures
 
 Most "generate agents for my repo" tools read your directories and emit `backend-agent`, `frontend-agent`, `database-agent`. Those are *locations*, not tasks — and the coding agent could already read those directories. You end up with ten agents nobody invokes and delete all of them within a week.
 
-agentfit starts from a harder claim: **a subagent only earns its existence by changing the outcome**, and there are exactly five mechanisms by which it can.
+agentrouter starts from a harder claim: **a subagent only earns its existence by changing the outcome**, and there are exactly five mechanisms by which it can.
 
 | Mechanism | The agent pays for itself because… |
 |---|---|
@@ -23,7 +23,7 @@ agentfit starts from a harder claim: **a subagent only earns its existence by ch
 | `durable-rubric` | its definition of done is stable across invocations and checkable |
 | `parallelism` | it runs over N independent targets at once |
 
-A candidate that satisfies none of these is not an agent. It is a **skill** (a procedure, same context) or a **rule** (a constraint that applies always, not on invocation). agentfit refuses to generate it and tells you which one it should be:
+A candidate that satisfies none of these is not an agent. It is a **skill** (a procedure, same context) or a **rule** (a constraint that applies always, not on invocation). agentrouter refuses to generate it and tells you which one it should be:
 
 ```
   ✕ api-docs-writer — This is a skill, not an agent.
@@ -51,7 +51,7 @@ Language detection is the weakest possible signal and the one most tools stop at
 ## The spec is the source of truth
 
 ```
-.agentfit/roster.json     ← specs, evidence, provenance, your corrections
+.agentrouter/roster.json     ← specs, evidence, provenance, your corrections
 .claude/agents/*.md       ← build output. regenerable.
 AGENTS.md                 ← managed block; everything outside it is yours
 ```
@@ -59,22 +59,22 @@ AGENTS.md                 ← managed block; everything outside it is yours
 Tuning writes to the **spec**, never to rendered markdown:
 
 ```bash
-npx agentfit tune test-triage --constraint "never re-run the full suite to check one class"
+npx agentrouter tune test-triage --constraint "never re-run the full suite to check one class"
 ```
 
 Corrections are appended as *standing corrections* that render last and win on conflict. They are never folded into the generated prose — a correction rewritten into the body is a correction that silently disappears on the next regeneration, which is the failure that makes hand-tuned generated agents drift back to their original behaviour after a few edits.
 
-Hand-written notes below the `<!-- agentfit:user -->` marker in any agent file are preserved verbatim across renders.
+Hand-written notes below the `<!-- agentrouter:user -->` marker in any agent file are preserved verbatim across renders.
 
 ## Lifecycle
 
 ```bash
-npx agentfit scan --evidence         # full evidence trail behind every proposal
-npx agentfit init                    # select → diff preview → confirm → write
-npx agentfit tune <id> --constraint "..."
-npx agentfit refresh                 # dry run: what has changed since?
-npx agentfit refresh --apply --prune # reconcile, retiring what lost its evidence
-npx agentfit render --check          # CI: fail if rendered files have drifted
+npx agentrouter scan --evidence         # full evidence trail behind every proposal
+npx agentrouter init                    # select → diff preview → confirm → write
+npx agentrouter tune <id> --constraint "..."
+npx agentrouter refresh                 # dry run: what has changed since?
+npx agentrouter refresh --apply --prune # reconcile, retiring what lost its evidence
+npx agentrouter render --check          # CI: fail if rendered files have drifted
 ```
 
 Because each spec records the evidence that justified it, `refresh` can tell the difference between an agent that has drifted and one whose *reason for existing* has gone away:
@@ -87,7 +87,7 @@ Because each spec records the evidence that justified it, `refresh` can tell the
   - ci-failure-analyst — no longer justified by any evidence
 ```
 
-`render` is idempotent and safe in CI: commit `.agentfit/roster.json`, gitignore the rendered files, regenerate on checkout.
+`render` is idempotent and safe in CI: commit `.agentrouter/roster.json`, gitignore the rendered files, regenerate on checkout.
 
 ## Optional: letting a model widen the field
 
@@ -95,7 +95,7 @@ The catalog can only judge candidates it already knows. `--llm` adds a pass wher
 
 ```bash
 npm install @anthropic-ai/sdk        # optional peer; the default path never needs it
-npx agentfit scan --llm
+npx agentrouter scan --llm
 ```
 
 The safety property is the point. The model is sent **only the evidence records** — never your source — and every claim it makes must cite evidence refs verbatim. Those citations are then resolved against the real records, and the proposals go through the *same* mechanism gate as the catalog:
@@ -107,7 +107,7 @@ The safety property is the point. The model is sent **only the evidence records*
 
 So the model widens the field of candidates; it never widens the bar. Six tests pin this, including the mixed case where one real claim and one fabricated claim appear on the same proposal — only the evidenced mechanism is credited.
 
-Everything else stays offline: `--llm` is the *only* command that makes a network call, and the SDK is an optional peer dependency, so a plain `npx agentfit` still installs nothing.
+Everything else stays offline: `--llm` is the *only* command that makes a network call, and the SDK is an optional peer dependency, so a plain `npx agentrouter` still installs nothing.
 
 ## Options
 
@@ -143,7 +143,7 @@ Fixtures are real directories with real git history, because the probes read bot
 
 ### It runs on itself
 
-CI does more than run the tests: it runs agentfit against this repository and fails if the committed agents no longer match their roster (`render --check`), or if the repository has drifted far enough to justify a different roster (`refresh`).
+CI does more than run the tests: it runs agentrouter against this repository and fails if the committed agents no longer match their roster (`render --check`), or if the repository has drifted far enough to justify a different roster (`refresh`).
 
 Dogfooding earned its keep immediately. The first self-scan proposed `package-fanout` for this single-package repo, justified by a Node **version** matrix in CI — the same work across two runtimes, which is not N independent fan-out targets. Fixing it surfaced a second bug (one CI job counted under two evidence kinds satisfied a two-job threshold) and a design rule now enforced across the catalog:
 

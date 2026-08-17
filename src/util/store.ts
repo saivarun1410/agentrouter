@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import type { Roster } from '../types.js';
 import type { PlannedWrite } from '../emitters/types.js';
 
-export const ROSTER_DIR = '.agentfit';
+export const ROSTER_DIR = '.agentrouter';
 export const ROSTER_PATH = `${ROSTER_DIR}/roster.json`;
 
 export function rosterPath(root: string): string {

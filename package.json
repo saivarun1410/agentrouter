@@ -1,10 +1,10 @@
 {
-  "name": "agentfit",
+  "name": "agentrouter",
   "version": "0.1.0",
   "description": "Derive a repo's subagent roster from evidence, and reject the candidates that should be skills or rules.",
   "type": "module",
   "bin": {
-    "agentfit": "dist/cli.js"
+    "agentrouter": "dist/cli.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

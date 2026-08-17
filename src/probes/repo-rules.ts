@@ -24,7 +24,7 @@ export const repoRulesProbe: Probe = {
     for (const file of RULE_FILES) {
       const stored = ctx.read(file);
       if (!stored) continue;
-      // Never treat agentfit's own output as repository evidence.
+      // Never treat agentrouter's own output as repository evidence.
       if (isEntirelyGenerated(stored)) continue;
       const raw = stripManagedBlocks(stored);
       const lines = raw.split('\n').length;

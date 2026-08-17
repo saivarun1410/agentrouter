@@ -11,14 +11,14 @@ export interface RenderArgs {
 
 /**
  * Regenerates agent files from the roster. Idempotent, so it is safe to run in
- * CI: commit `.agentfit/roster.json`, gitignore the rendered files, and
+ * CI: commit `.agentrouter/roster.json`, gitignore the rendered files, and
  * regenerate on checkout.
  */
 export function runRender(args: RenderArgs): number {
   const roster = readRoster(args.root);
   if (!roster) {
     process.stderr.write(
-      `${red('✕')} no ${ROSTER_PATH} found. Run ${'`agentfit init`'} first.\n`,
+      `${red('✕')} no ${ROSTER_PATH} found. Run ${'`agentrouter init`'} first.\n`,
     );
     return 1;
   }
@@ -35,7 +35,7 @@ export function runRender(args: RenderArgs): number {
     for (const write of changed) {
       process.stdout.write(`  ${write.action === 'create' ? '+' : '~'} ${write.path}\n`);
     }
-    process.stdout.write(dim('  Run `agentfit render` to update them.\n'));
+    process.stdout.write(dim('  Run `agentrouter render` to update them.\n'));
     return 1;
   }
 

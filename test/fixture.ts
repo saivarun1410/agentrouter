@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os';
  * either would stop testing the thing most likely to break.
  */
 export function makeRepo(files: Record<string, string>, commits: string[] = []): string {
-  const root = mkdtempSync(join(tmpdir(), 'agentfit-fixture-'));
+  const root = mkdtempSync(join(tmpdir(), 'agentrouter-fixture-'));
   for (const [path, contents] of Object.entries(files)) {
     const abs = join(root, path);
     mkdirSync(dirname(abs), { recursive: true });

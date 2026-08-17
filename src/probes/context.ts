@@ -18,9 +18,9 @@ const IGNORED_DIRS = new Set([
   '.gradle',
   '.idea',
   'coverage',
-  // agentfit's own output. Reading it back would make each scan observe the
+  // agentrouter's own output. Reading it back would make each scan observe the
   // previous scan's conclusions as evidence.
-  '.agentfit',
+  '.agentrouter',
   '.claude',
 ]);
 

@@ -14,7 +14,7 @@ export interface LlmOptions {
 
 /**
  * The SDK is an optional peer dependency, so the deterministic path stays
- * install-free. Loading it lazily means `agentfit scan` never pays for it and
+ * install-free. Loading it lazily means `agentrouter scan` never pays for it and
  * only `--llm` requires it to be present.
  */
 async function loadClient(): Promise<Anthropic> {
@@ -23,8 +23,8 @@ async function loadClient(): Promise<Anthropic> {
     module = await import('@anthropic-ai/sdk');
   } catch {
     throw new Error(
-      '--llm needs the Anthropic SDK, which agentfit does not install by default.\n' +
-        '  Install it alongside agentfit:  npm install @anthropic-ai/sdk',
+      '--llm needs the Anthropic SDK, which agentrouter does not install by default.\n' +
+        '  Install it alongside agentrouter:  npm install @anthropic-ai/sdk',
     );
   }
   // Zero-arg construction resolves ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN, or an
@@ -41,15 +41,15 @@ function describeFailure(error: unknown): Error {
     return new Error(
       `--llm could not authenticate: ${message}\n` +
         '  Sign in with `ant auth login`, or export ANTHROPIC_API_KEY.\n' +
-        '  Every other agentfit command runs offline and needs neither.',
+        '  Every other agentrouter command runs offline and needs neither.',
     );
   }
   return error instanceof Error ? error : new Error(message);
 }
 
-const SYSTEM = `You extend a repository-analysis tool called agentfit, which decides which subagents a codebase justifies.
+const SYSTEM = `You extend a repository-analysis tool called agentrouter, which decides which subagents a codebase justifies.
 
-agentfit's central rule: a subagent only earns its existence when it changes the outcome through one of five mechanisms.
+agentrouter's central rule: a subagent only earns its existence when it changes the outcome through one of five mechanisms.
 
 ${MECHANISMS.map((m) => `- ${m}: ${MECHANISM_DESCRIPTIONS[m]}`).join('\n')}
 

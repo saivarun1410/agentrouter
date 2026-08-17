@@ -13,7 +13,7 @@ import {
   type Roster,
 } from '../types.js';
 
-export const GENERATOR = 'agentfit@0.1.0';
+export const GENERATOR = 'agentrouter@0.1.0';
 
 /**
  * Deliberately small. A roster the user will not read is a roster they will not
