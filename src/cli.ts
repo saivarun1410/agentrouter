@@ -54,12 +54,14 @@ ${bold('Examples')}
 async function main(argv: string[]): Promise<number> {
   const args = parse(argv);
 
-  if (args.flags.has('help') || args.flags.has('h') || args.command === 'help' || !args.command) {
-    process.stdout.write(HELP);
-    return 0;
-  }
+  // Version is checked first: `agentfit --version` parses to no command, which
+  // would otherwise fall into the empty-command branch and print help instead.
   if (args.flags.has('version') || args.flags.has('v')) {
     process.stdout.write(`${GENERATOR}\n`);
+    return 0;
+  }
+  if (args.flags.has('help') || args.flags.has('h') || args.command === 'help' || !args.command) {
+    process.stdout.write(HELP);
     return 0;
   }
 

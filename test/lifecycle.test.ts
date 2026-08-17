@@ -162,3 +162,15 @@ test('a hand-written AGENTS.md is still read, minus the managed block', () => {
     'genuine user rules in AGENTS.md must survive the managed-block strip',
   );
 });
+
+test('--version reports the version rather than falling through to help', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const cli = join(process.cwd(), 'dist', 'cli.js');
+  for (const flag of ['--version', '-v']) {
+    const out = execFileSync('node', [cli, flag], { encoding: 'utf8' });
+    assert.match(out, /^agentfit@\d+\.\d+\.\d+/, `${flag} must print the version`);
+    assert.ok(!out.includes('Usage'), `${flag} must not print the help text`);
+  }
+  // A bare invocation still shows help.
+  assert.match(execFileSync('node', [cli], { encoding: 'utf8' }), /Usage/);
+});
