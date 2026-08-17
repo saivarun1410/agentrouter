@@ -2,6 +2,14 @@
   "name": "agentrouter",
   "version": "0.1.0",
   "description": "Derive a repo's subagent roster from evidence, and reject the candidates that should be skills or rules.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saivarun1410/agentrouter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/saivarun1410/agentrouter/issues"
+  },
+  "homepage": "https://github.com/saivarun1410/agentrouter#readme",
   "type": "module",
   "bin": {
     "agentrouter": "dist/cli.js"
