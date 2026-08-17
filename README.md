@@ -3,8 +3,10 @@
 Derive a repository's subagent roster from evidence — and say out loud which candidates should be skills or rules instead.
 
 ```bash
-npx agentrouter scan     # analyse, propose, explain. writes nothing.
-npx agentrouter init     # pick from the proposals and write them
+npm install -g @saivarun1410/agentrouter   # or run once: npx @saivarun1410/agentrouter scan
+
+agentrouter scan     # analyse, propose, explain. writes nothing.
+agentrouter init     # pick from the proposals and write them
 ```
 
 No API key. No model call. Offline, deterministic, and testable against fixtures. An optional `--llm` pass can widen the candidate field without loosening the bar — see below.
@@ -59,7 +61,7 @@ AGENTS.md                 ← managed block; everything outside it is yours
 Tuning writes to the **spec**, never to rendered markdown:
 
 ```bash
-npx agentrouter tune test-triage --constraint "never re-run the full suite to check one class"
+agentrouter tune test-triage --constraint "never re-run the full suite to check one class"
 ```
 
 Corrections are appended as *standing corrections* that render last and win on conflict. They are never folded into the generated prose — a correction rewritten into the body is a correction that silently disappears on the next regeneration, which is the failure that makes hand-tuned generated agents drift back to their original behaviour after a few edits.
@@ -69,12 +71,12 @@ Hand-written notes below the `<!-- agentrouter:user -->` marker in any agent fil
 ## Lifecycle
 
 ```bash
-npx agentrouter scan --evidence         # full evidence trail behind every proposal
-npx agentrouter init                    # select → diff preview → confirm → write
-npx agentrouter tune <id> --constraint "..."
-npx agentrouter refresh                 # dry run: what has changed since?
-npx agentrouter refresh --apply --prune # reconcile, retiring what lost its evidence
-npx agentrouter render --check          # CI: fail if rendered files have drifted
+agentrouter scan --evidence         # full evidence trail behind every proposal
+agentrouter init                    # select → diff preview → confirm → write
+agentrouter tune <id> --constraint "..."
+agentrouter refresh                 # dry run: what has changed since?
+agentrouter refresh --apply --prune # reconcile, retiring what lost its evidence
+agentrouter render --check          # CI: fail if rendered files have drifted
 ```
 
 Because each spec records the evidence that justified it, `refresh` can tell the difference between an agent that has drifted and one whose *reason for existing* has gone away:
@@ -95,7 +97,7 @@ The catalog can only judge candidates it already knows. `--llm` adds a pass wher
 
 ```bash
 npm install @anthropic-ai/sdk        # optional peer; the default path never needs it
-npx agentrouter scan --llm
+agentrouter scan --llm
 ```
 
 The safety property is the point. The model is sent **only the evidence records** — never your source — and every claim it makes must cite evidence refs verbatim. Those citations are then resolved against the real records, and the proposals go through the *same* mechanism gate as the catalog:
@@ -107,7 +109,7 @@ The safety property is the point. The model is sent **only the evidence records*
 
 So the model widens the field of candidates; it never widens the bar. Six tests pin this, including the mixed case where one real claim and one fabricated claim appear on the same proposal — only the evidenced mechanism is credited.
 
-Everything else stays offline: `--llm` is the *only* command that makes a network call, and the SDK is an optional peer dependency, so a plain `npx agentrouter` still installs nothing.
+Everything else stays offline: `--llm` is the *only* command that makes a network call, and the SDK is an optional peer dependency, so a plain `agentrouter` run still installs nothing.
 
 ## Options
 

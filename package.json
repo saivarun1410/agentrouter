@@ -1,5 +1,5 @@
 {
-  "name": "agentrouter",
+  "name": "@saivarun1410/agentrouter",
   "version": "0.1.0",
   "description": "Derive a repo's subagent roster from evidence, and reject the candidates that should be skills or rules.",
   "repository": {

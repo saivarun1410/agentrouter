@@ -54,6 +54,6 @@ jobs:
           echo "$output"
           if ! grep -q "still matches the repository" <<<"$output"; then
             echo "::error::The roster no longer matches this repository."
-            echo "::error::Review the diff above, then run: npx agentrouter refresh --apply"
+            echo "::error::Review the diff above, then run: agentrouter refresh --apply"
             exit 1
           fi
